@@ -51,15 +51,22 @@
 </head>
 <body>
 <h1>American Literature – Role Rotation Checker</h1>
-<p class="note">Week 0 = Test Day. Change <code>CURRENT_WEEK</code> in the code to update highlighted roles.</p>
+<p class="note">Week 0 = Test Day. Change <code>CURRENT_WEEK</code> below to highlight the current week. All starting roles are listed below.</p>
 
 <div id="rotation"></div>
 
 <script>
-const CURRENT_WEEK = 1; // <-- Change this each week, 0–15
+// ======================
+// --- CONFIGURATION ---
+// ======================
 
+// Current week to highlight (0–15)
+const CURRENT_WEEK = 1;
+
+// Roles order for rotation
 const rolesOrder = ["MM","RL","QS","TI","TT"];
 
+// Full role names
 const roleNames = {
   "MM": "Media Maven",
   "RL": "Reality Liaison",
@@ -67,6 +74,11 @@ const roleNames = {
   "TI": "The Instigator",
   "TT": "Time Tracker"
 };
+
+// ======================
+// --- STUDENTS DATA ---
+// ======================
+// Only edit this section to change students, starting roles, or add/remove students
 
 const groups = [
   {
@@ -124,7 +136,7 @@ const groups = [
     students: [
       {name:"Madeline Noel", role0:"MM"},
       {name:"Ainsley Koehler", role0:"RL"},
-      {name:"Abigail Davis", role0:"QS"},
+      {name:"Abigail Davis", role0:"TI"},
       {name:"James Neal", role0:"QS"},
       {name:"Gabrielle Green", role0:"TT"}
     ]
@@ -141,7 +153,10 @@ const groups = [
   }
 ];
 
-// Generate table
+// ======================
+// --- ROTATION LOGIC ---
+// ======================
+
 const container = document.getElementById("rotation");
 
 groups.forEach(group=>{
@@ -175,8 +190,8 @@ groups.forEach(group=>{
       const startIndex = rolesOrder.indexOf(student.role0);
       const roleIndex = (startIndex + w) % rolesOrder.length;
       const roleCode = rolesOrder[roleIndex];
-      // Only show role if there is a student in that slot
-      if(roleSlots.includes(roleCode) && roleSlots.indexOf(roleCode)<group.students.length){
+      // Only show role if the student exists in that slot
+      if(roleSlots.indexOf(roleCode) < group.students.length){
         cell.textContent = roleNames[roleCode];
         cell.className = "role-"+roleCode + ((w===CURRENT_WEEK)?" current-week":"");
       } else {
