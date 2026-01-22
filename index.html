@@ -15,6 +15,11 @@
   .note {
     font-size: 0.9rem;
     color: #555;
+    margin-bottom: 1rem;
+  }
+  select {
+    font-size: 1rem;
+    padding: 0.2rem 0.5rem;
     margin-bottom: 1.5rem;
   }
   table {
@@ -51,7 +56,10 @@
 </head>
 <body>
 <h1>American Literature – Role Rotation Checker</h1>
-<p class="note">Week 0 = Test Day. Change <code>CURRENT_WEEK</code> below to highlight the current week. All starting roles are listed below.</p>
+<p class="note">Select a week to highlight. Week 0 = Test Day. All starting roles are listed below.</p>
+
+<label for="weekSelector">Select Week: </label>
+<select id="weekSelector"></select>
 
 <div id="rotation"></div>
 
@@ -60,13 +68,8 @@
 // --- CONFIGURATION ---
 // ======================
 
-// Current week to highlight (0–15)
-const CURRENT_WEEK = 1;
-
 // Roles order for rotation
 const rolesOrder = ["MM","RL","QS","TI","TT"];
-
-// Full role names
 const roleNames = {
   "MM": "Media Maven",
   "RL": "Reality Liaison",
@@ -78,7 +81,6 @@ const roleNames = {
 // ======================
 // --- STUDENTS DATA ---
 // ======================
-// Only edit this section to change students, starting roles, or add/remove students
 
 const groups = [
   {
@@ -148,7 +150,7 @@ const groups = [
       {name:"Liliana Salazar", role0:"RL"},
       {name:"Jace Rawls", role0:"QS"},
       {name:"Emmory Minnieweather", role0:"TI"}
-      // TT slot empty
+      // Only 4 students, all get a role every week
     ]
   }
 ];
@@ -158,49 +160,64 @@ const groups = [
 // ======================
 
 const container = document.getElementById("rotation");
+const weekSelector = document.getElementById("weekSelector");
 
-groups.forEach(group=>{
-  const tbl = document.createElement("table");
-  
-  // Group header
-  const headerRow = tbl.insertRow();
-  const groupCell = document.createElement("td");
-  groupCell.colSpan = 17;
-  groupCell.className = "group-name";
-  groupCell.textContent = group.name;
-  headerRow.appendChild(groupCell);
-  
-  // Table headers
-  const headRow = tbl.insertRow();
-  headRow.insertCell().textContent = "Student";
-  for(let w=0; w<16; w++){
-    const th = document.createElement("th");
-    th.textContent = "Week "+w;
-    headRow.appendChild(th);
-  }
-  
-  // Student rows
-  const roleSlots = ["MM","RL","QS","TI","TT"];
-  group.students.forEach(student=>{
-    const row = tbl.insertRow();
-    row.insertCell().textContent = student.name;
+// Populate week selector
+for(let w=0; w<16; w++){
+  const opt = document.createElement("option");
+  opt.value = w;
+  opt.textContent = "Week " + w;
+  weekSelector.appendChild(opt);
+}
+
+// Draw the table for a given week
+function drawRotation(week){
+  container.innerHTML = ""; // clear previous
+  groups.forEach(group=>{
+    const tbl = document.createElement("table");
     
+    // Group header
+    const headerRow = tbl.insertRow();
+    const groupCell = document.createElement("td");
+    groupCell.colSpan = 17;
+    groupCell.className = "group-name";
+    groupCell.textContent = group.name;
+    headerRow.appendChild(groupCell);
+    
+    // Table headers
+    const headRow = tbl.insertRow();
+    headRow.insertCell().textContent = "Student";
     for(let w=0; w<16; w++){
-      const cell = row.insertCell();
-      const startIndex = rolesOrder.indexOf(student.role0);
-      const roleIndex = (startIndex + w) % rolesOrder.length;
-      const roleCode = rolesOrder[roleIndex];
-      // Only show role if the student exists in that slot
-      if(roleSlots.indexOf(roleCode) < group.students.length){
-        cell.textContent = roleNames[roleCode];
-        cell.className = "role-"+roleCode + ((w===CURRENT_WEEK)?" current-week":"");
-      } else {
-        cell.textContent = "";
-      }
+      const th = document.createElement("th");
+      th.textContent = "Week "+w;
+      headRow.appendChild(th);
     }
+    
+    // Student rows
+    group.students.forEach(student=>{
+      const row = tbl.insertRow();
+      row.insertCell().textContent = student.name;
+      for(let w=0; w<16; w++){
+        const cell = row.insertCell();
+        const startIndex = rolesOrder.indexOf(student.role0);
+        const roleIndex = (startIndex + w) % rolesOrder.length;
+        const roleCode = rolesOrder[roleIndex];
+        cell.textContent = roleNames[roleCode];
+        if(w===week) cell.classList.add("current-week");
+        cell.classList.add("role-"+roleCode);
+      }
+    });
+    
+    container.appendChild(tbl);
   });
-  
-  container.appendChild(tbl);
+}
+
+// Initial draw for week 0
+drawRotation(0);
+
+// Update highlight when week selector changes
+weekSelector.addEventListener("change", e=>{
+  drawRotation(parseInt(e.target.value));
 });
 </script>
 </body>
