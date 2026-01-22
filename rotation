@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>American Literature – Role Rotation Checker</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 2rem;
+    background: #fafafa;
+  }
+  h1 {
+    margin-bottom: 0.25rem;
+  }
+  .note {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 1.5rem;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 2rem;
+    background: white;
+  }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 0.5rem;
+    text-align: center;
+  }
+  th {
+    background: #f0f0f0;
+  }
+  .group-name {
+    background: #e0e0ff;
+    font-weight: bold;
+    text-align: left;
+    padding-left: 1rem;
+    font-size: 1.1rem;
+  }
+  .role-MM { background-color: #cce5ff; }
+  .role-RL { background-color: #d4edda; }
+  .role-QS { background-color: #fff3cd; }
+  .role-TI { background-color: #f8d7da; }
+  .role-TT { background-color: #e2e3e5; }
+  .current-week {
+    font-weight: bold;
+    border: 2px solid #000;
+  }
+</style>
+</head>
+<body>
+<h1>American Literature – Role Rotation Checker</h1>
+<p class="note">Week 0 = Test Day. Change <code>CURRENT_WEEK</code> in the code to update highlighted roles.</p>
+
+<div id="rotation"></div>
+
+<script>
+const CURRENT_WEEK = 1; // <-- Change this each week, 0–15
+
+const rolesOrder = ["MM","RL","QS","TI","TT"];
+
+const roleNames = {
+  "MM": "Media Maven",
+  "RL": "Reality Liaison",
+  "QS": "Quote Sniper",
+  "TI": "The Instigator",
+  "TT": "Time Tracker"
+};
+
+const groups = [
+  {
+    name: "Group 1",
+    students: [
+      {name:"Shilah Vance", role0:"MM"},
+      {name:"Sherlyn Sanchez", role0:"RL"},
+      {name:"Jonathon Shaw", role0:"QS"},
+      {name:"Owen Sims", role0:"TI"},
+      {name:"William Tucker", role0:"TT"}
+    ]
+  },
+  {
+    name: "Group 2",
+    students: [
+      {name:"Dylan Festervan", role0:"MM"},
+      {name:"Kylee Stern (She/Her)", role0:"RL"},
+      {name:"Brianna Richardson", role0:"QS"},
+      {name:"Natalie Bickley", role0:"TI"},
+      {name:"Arzelia Kendall", role0:"TT"}
+    ]
+  },
+  {
+    name: "Group 3",
+    students: [
+      {name:"Jayden Eaton", role0:"MM"},
+      {name:"Camryn Robb", role0:"RL"},
+      {name:"Kylee Cross", role0:"QS"},
+      {name:"Keidric Clark", role0:"TI"},
+      {name:"Levi LeJeune", role0:"TT"}
+    ]
+  },
+  {
+    name: "Group 4",
+    students: [
+      {name:"Tyler Ward-Roberts", role0:"MM"},
+      {name:"William Wilson", role0:"RL"},
+      {name:"Chariyah Harris", role0:"QS"},
+      {name:"Joshua Vaughn", role0:"TI"},
+      {name:"Emily Amaya", role0:"TT"}
+    ]
+  },
+  {
+    name: "Group 5",
+    students: [
+      {name:"Andrew Allen", role0:"MM"},
+      {name:"Caitlyn Poe", role0:"RL"},
+      {name:"Dikshya Siwakoti", role0:"QS"},
+      {name:"Laiklyn Squyres", role0:"TI"},
+      {name:"Riley Samson", role0:"TT"}
+    ]
+  },
+  {
+    name: "Group 6",
+    students: [
+      {name:"Madeline Noel", role0:"MM"},
+      {name:"Ainsley Koehler", role0:"RL"},
+      {name:"Abigail Davis", role0:"QS"},
+      {name:"James Neal", role0:"QS"},
+      {name:"Gabrielle Green", role0:"TT"}
+    ]
+  },
+  {
+    name: "Group 7",
+    students: [
+      {name:"Claire Russell", role0:"MM"},
+      {name:"Liliana Salazar", role0:"RL"},
+      {name:"Jace Rawls", role0:"QS"},
+      {name:"Emmory Minnieweather", role0:"TI"}
+      // TT slot empty
+    ]
+  }
+];
+
+// Generate table
+const container = document.getElementById("rotation");
+
+groups.forEach(group=>{
+  const tbl = document.createElement("table");
+  
+  // Group header
+  const headerRow = tbl.insertRow();
+  const groupCell = document.createElement("td");
+  groupCell.colSpan = 17;
+  groupCell.className = "group-name";
+  groupCell.textContent = group.name;
+  headerRow.appendChild(groupCell);
+  
+  // Table headers
+  const headRow = tbl.insertRow();
+  headRow.insertCell().textContent = "Student";
+  for(let w=0; w<16; w++){
+    const th = document.createElement("th");
+    th.textContent = "Week "+w;
+    headRow.appendChild(th);
+  }
+  
+  // Student rows
+  const roleSlots = ["MM","RL","QS","TI","TT"];
+  group.students.forEach(student=>{
+    const row = tbl.insertRow();
+    row.insertCell().textContent = student.name;
+    
+    for(let w=0; w<16; w++){
+      const cell = row.insertCell();
+      const startIndex = rolesOrder.indexOf(student.role0);
+      const roleIndex = (startIndex + w) % rolesOrder.length;
+      const roleCode = rolesOrder[roleIndex];
+      // Only show role if there is a student in that slot
+      if(roleSlots.includes(roleCode) && roleSlots.indexOf(roleCode)<group.students.length){
+        cell.textContent = roleNames[roleCode];
+        cell.className = "role-"+roleCode + ((w===CURRENT_WEEK)?" current-week":"");
+      } else {
+        cell.textContent = "";
+      }
+    }
+  });
+  
+  container.appendChild(tbl);
+});
+</script>
+</body>
+</html>
